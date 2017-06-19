@@ -1,0 +1,9 @@
+*.iml
+node_modules/
+tmp/
+temp/
+*.log
+.DS_Store
+.idea
+coverage
+.happypack

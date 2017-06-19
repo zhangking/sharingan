@@ -1,15 +1,4 @@
-# sharingan
-
-use html5canvas
-
-copy the screen and draw something
-
-
-### usage
-
-```
-
-import Sharingan from "sharingan";
+import Sharingan from "./lib/sharingan.js";
 
 var s;
 function takeScreenshot() {
@@ -24,10 +13,5 @@ function getImg(){
   console.log(s.getData());
 }
 
-```
-
-
-###  License
-
-MIT
-
+window.takeScreenshot = takeScreenshot;
+window.getImg = getImg;
