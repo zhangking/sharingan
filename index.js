@@ -7,7 +7,7 @@ function takeScreenshot() {
       target:document.querySelector('canvas'),
       scale:0.6
     });
-    s.catch();
+    s.catch(function(){});
 }
 
 function getImg(){
