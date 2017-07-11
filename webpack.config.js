@@ -6,8 +6,8 @@ const webpack = require('webpack');
 
 module.exports = {
     entry: {
-       index: './lib/sharingan.js'
-    //    index: './index.js'
+    //    index: './lib/sharingan.js'
+       index: './index.js'
     },
     output: {
         path: path.resolve(__dirname, './build'),

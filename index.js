@@ -10,9 +10,4 @@ function takeScreenshot() {
     s.catch(function(){});
 }
 
-function getImg(){
-  console.log(s.getData());
-}
-
 window.takeScreenshot = takeScreenshot;
-window.getImg = getImg;
