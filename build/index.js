@@ -144,55 +144,12 @@ var Draw = function () {
             }
         }
     }, {
-        key: "poly",
-        value: function poly(x, y, x1, y1, n) {
-            this.init();
-            var obj = this.obj;
-            var r = Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2));;
-            obj.save();
-            obj.translate(x, y);
-            obj.rotate(Math.PI / 2);
-            var nx = r * Math.cos(Math.PI / n);
-            var ny = r * Math.sin(Math.PI / n);
-            obj.beginPath();
-            obj.lineCap = "round";
-            obj.moveTo(nx, ny);
-            for (var i = 0; i <= n; i++) {
-                obj.rotate(Math.PI * 2 / n);
-                obj.lineTo(nx, -ny);
-            }
-            if (this.type == "stroke") {
-                this.obj.stroke();
-            } else if (this.type == "fill") {
-                this.obj.fill();
-            }
-            obj.restore();
-        }
-    }, {
         key: "pen",
         value: function pen(x, y, x1, y1) {
             this.init();
             this.obj.save();
             this.obj.lineCap = "round";
             this.obj.lineTo(x1, y1);
-            this.obj.stroke();
-            this.obj.restore();
-        }
-    }, {
-        key: "eraser",
-        value: function eraser(x, y, x1, y1) {
-            this.obj.lineCap = "round";
-            this.obj.clearRect(x1 - 5, y1 - 5, 10, 10);
-        }
-    }, {
-        key: "cut",
-        value: function cut(x, y, x1, y1) {
-            this.init();
-            this.obj.save();
-            this.obj.setLineDash([4, 2]);
-            this.obj.beginPath();
-            this.obj.lineWidth = 1;
-            this.obj.rect(x, y, x1 - x, y1 - y);
             this.obj.stroke();
             this.obj.restore();
         }
@@ -3786,30 +3743,24 @@ var sharingan = function () {
         this.config = Object.assign({
             useCORS: true,
             allowTaint: false,
-            type: 'rect',
+            type: 'pen',
             color: "red",
             linewidth: "2",
             style: "stroke",
-            width: window.outerWidth,
-            height: window.outerHeight
+            scale: 1
         }, config);
     }
 
     _createClass(sharingan, [{
-        key: 'getData',
-        value: function getData() {
-            return this.canvas.toDataURL();
-        }
-    }, {
         key: 'catch',
         value: function _catch(cb) {
             var _config = this.config,
+                target = _config.target,
+                scale = _config.scale,
                 element = _config.element,
                 useCORS = _config.useCORS,
                 allowTaint = _config.allowTaint,
                 type = _config.type,
-                width = _config.width,
-                height = _config.height,
                 color = _config.color,
                 linewidth = _config.linewidth,
                 style = _config.style,
@@ -3826,80 +3777,58 @@ var sharingan = function () {
                         ly = void 0,
                         lw = void 0,
                         lh = void 0;
-                    var cutdata = void 0;
                     var arr = [];
-                    var cutflag = false;
-                    var obj = canvas.getContext("2d");
+                    var obj = target.getContext("2d");
+                    var width = canvas.width * scale;
+                    var height = canvas.height * scale;
 
-                    arr.push(obj.getImageData(0, 0, width, height));
+                    target.style.cursor = 'pointer';
+                    target.width = width;
+                    target.height = height;
 
-                    canvas.style.cursor = 'pointer';
-                    canvas.onmousedown = function (e) {
+                    console.log(canvas.height, height);
+
+                    obj.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, width, height);
+                    var source = obj.getImageData(0, 0, width, height);
+                    arr.push(source);
+
+                    target.onclick = function (e) {
+                        e.stopPropagation();
+                    };
+                    target.onmousedown = function (e) {
+                        e.stopPropagation();
                         x = e.offsetX;
                         y = e.offsetY;
                         if (type == "pen") {
                             obj.beginPath();
                             obj.moveTo(x, y);
                         }
-                        if (type == "eraser") {
-                            obj.clearRect(x - 5, y - 5, 10, 10);
-                        }
-                        if (cutflag && type == "cut") {
-                            if (arr.length != 0) {
-                                arr.splice(-1, 1);
-                            }
-                        }
-                        var draw = new _draw2.default(obj, { type: style, color: color, width: linewidth }); //实例化构造函数
-                        canvas.onmousemove = function (e) {
+
+                        var draw = new _draw2.default(obj, { type: style, color: color, width: linewidth });
+
+                        target.onmousemove = function (e) {
                             w = e.offsetX;
                             h = e.offsetY;
-                            if (type != "eraser") {
-                                obj.clearRect(0, 0, width, height);
-                                if (arr.length != 0) {
-                                    obj.putImageData(arr[arr.length - 1], 0, 0, 0, 0, width, height);
-                                }
+                            obj.clearRect(0, 0, width, height);
+                            if (arr.length != 0) {
+                                obj.putImageData(arr[arr.length - 1], 0, 0, 0, 0, width, height);
                             }
-                            if (cutflag && type == "cut") {
-                                if (iscut) {
-                                    obj.clearRect(lx, ly, lw - lx, lh - ly);
-                                }
-                                var nx = lx + (w - x);
-                                var ny = ly + (h - y);
-                                obj.putImageData(cutdata, nx, ny);
-                            } else if (type == "poly") {
-                                draw[type](x, y, w, h, n);
-                            } else {
-                                draw[type](x, y, w, h);
-                            }
+                            draw[type](x, y, w, h);
                         };
-                        document.onmouseup = function () {
-                            canvas.onmousemove = null;
+                        document.onmouseup = function (e) {
+                            target.onmousemove = null;
                             document.onmouseup = null;
-                            if (type == "cut") {
-                                if (!cutflag) {
-                                    cutflag = true;
-                                    cutdata = obj.getImageData(x + 1, y + 1, w - x - 2, h - y - 2);
-                                    lx = x;ly = y;lw = w;lh = h;
-                                    container.css({ display: "none" });
-                                } else {
-                                    cutflag = false;
-                                    container.css({ display: "block" });
-                                }
-                            }
                             arr.push(obj.getImageData(0, 0, width, height));
                         };
                     };
 
-                    self.canvas = canvas;
-
-                    container && container.appendChild(canvas);
-
-                    cb && cb(canvas);
+                    cb && cb(target);
                 },
+
                 useCORS: useCORS,
                 allowTaint: allowTaint,
-                width: width,
-                height: height
+                width: window.innerWidth,
+                height: window.innerHeight
             });
         }
     }]);

@@ -4,7 +4,8 @@ var s;
 function takeScreenshot() {
     s = new Sharingan({
       element: document.getElementById('view'),
-      container: document.body,
+      target:document.querySelector('canvas'),
+      scale:0.6
     });
     s.catch();
 }
