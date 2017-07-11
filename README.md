@@ -4,7 +4,7 @@ use html5canvas
 
 copy the screen and draw something
 
-[demo](https://zhangking.github.io/sharingan/)
+[demo](https://zhangking.github.io/sharingan/docs/)
 
 ### params
 

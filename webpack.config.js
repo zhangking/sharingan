@@ -6,8 +6,7 @@ const webpack = require('webpack');
 
 module.exports = {
     entry: {
-    //    index: './lib/sharingan.js'
-       index: './index.js'
+       index: './lib/sharingan.js'
     },
     output: {
         path: path.resolve(__dirname, './build'),
@@ -23,10 +22,5 @@ module.exports = {
             exclude: /node_modules/,
             loaders: ['babel-loader']
         }]
-    },
-    devServer: {
-        contentBase: path.join(__dirname, "./"),
-        compress: true,
-        port: 9000
     }
 };
