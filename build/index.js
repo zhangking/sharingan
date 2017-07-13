@@ -3766,7 +3766,22 @@ var sharingan = function () {
                 style = _config.style;
 
             var self = this;
+
+            var scaleby = 2;
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+            var _canvas = document.createElement("canvas");
+            _canvas.width = w * scaleby;
+            _canvas.height = h * scaleby;
+            _canvas.style.width = w * scaleby + "px";
+            _canvas.style.height = h * scaleby + "px";
+            var _context = _canvas.getContext("2d");
+            _context.scale(scaleby, scaleby);
+
+            var _scale = scale / scaleby;
+
             element && (0, _html2canvas2.default)(element, {
+                canvas: _canvas,
                 onrendered: function onrendered(canvas) {
                     var x = void 0,
                         y = void 0,
@@ -3778,15 +3793,17 @@ var sharingan = function () {
                         lh = void 0;
                     var arr = [];
                     var obj = target.getContext("2d");
-                    var width = canvas.width * scale;
-                    var height = canvas.height * scale;
+                    var width = canvas.width * _scale;
+                    var height = canvas.height * _scale;
 
                     target.style.cursor = "url('data:img/jpg;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABOklEQVRYR+2W21HDMBBFTyognQQqgHQQOqAFOqEDoAJKSEpIOqAEOoC5M3hGsWXtw5rJj/1ry+fsrnTtDTe+Njfmswr07MAWeAcOwAl4Bn6sEfcSEPwI3BfAM7C3JHoJqOLHSrWmRC8BVS6Ju6jEEgG1/Qt4BVRpSiIrUM5cG02zTklkBGobzivxCbyUY4oK1ODD+7wSV8yIQAvulUh3wAO3JC7A0zgXPB2IwOck3v4TcpKMlkAGXko8AN+tOG4JLIEPzMnMxzJzAj3g1ZlHBBStO+trNnPfBddaawQZCTe8JaC0+gA0iohECN4S+AW0g5XvXokw3BIoo9WSSMEtAd33SKThHgFLYhG8JaDKy7+bWie0fpLt0WM7dwx1CpTfYwn96epUaE8M3Ykyr563vgWLXu5ZvAqsHfgD9TFiIelPhToAAAAASUVORK5CYII=') 5 40, auto";
                     target.width = width;
                     target.height = height;
+                    target.style.width = width;
+                    target.style.height = height;
 
                     obj.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, width, height);
-                    var source = obj.getImageData(0, 0, width, height);
+                    var source = obj.getImageData(0, 0, canvas.width, canvas.height);
                     arr.push(source);
 
                     target.onclick = function (e) {

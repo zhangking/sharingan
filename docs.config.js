@@ -11,7 +11,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, './docs'),
         filename: '[name].js',
-        publicPath: '/build/'
+        publicPath: '/docs/'
     },
     module: {
         rules: [{
