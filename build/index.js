@@ -99,6 +99,7 @@ var Draw = function () {
         this.type = setting.type || "stroke";
         this.color = setting.color || "#000";
         this.width = setting.width || "1";
+        this.scale = setting.scale || 1;
     }
 
     _createClass(Draw, [{
@@ -113,7 +114,7 @@ var Draw = function () {
         value: function rect(x, y, x1, y1) {
             this.init();
             this.obj.beginPath();
-            this.obj.rect(x, y, x1 - x, y1 - y);
+            this.obj.rect(x / this.scale, y / this.scale, (x1 - x) / this.scale, (y1 - y) / this.scale);
 
             if (this.type == "stroke") {
                 this.obj.stroke();
@@ -126,17 +127,17 @@ var Draw = function () {
         value: function line(x, y, x1, y1) {
             this.init();
             this.obj.beginPath();
-            this.obj.moveTo(x, y);
-            this.obj.lineTo(x1, y1);
+            this.obj.moveTo(x / this.scale, y / this.scale);
+            this.obj.lineTo(x1 / this.scale, y1 / this.scale);
             this.obj.stroke();
         }
     }, {
         key: "circle",
         value: function circle(x, y, x1, y1) {
             this.init();
-            var r = Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
+            var r = Math.sqrt(Math.pow((x - x1) / this.scale, 2) + Math.pow((y - y1) / this.scale, 2));
             this.obj.beginPath();
-            this.obj.arc(x, y, r, 0, 2 * Math.PI);
+            this.obj.arc(x / this.scale, y / this.scale, r, 0, 2 * Math.PI);
             if (this.type == "stroke") {
                 this.obj.stroke();
             } else if (this.type == "fill") {
@@ -149,7 +150,7 @@ var Draw = function () {
             this.init();
             this.obj.save();
             this.obj.lineCap = "round";
-            this.obj.lineTo(x1, y1);
+            this.obj.lineTo(x1 / this.scale, y1 / this.scale);
             this.obj.stroke();
             this.obj.restore();
         }
@@ -3745,7 +3746,7 @@ var sharingan = function () {
             allowTaint: false,
             type: 'pen',
             color: "red",
-            linewidth: "2",
+            linewidth: "4",
             style: "stroke",
             scale: 1
         }, config);
@@ -3793,10 +3794,10 @@ var sharingan = function () {
                         lh = void 0;
                     var arr = [];
                     var obj = target.getContext("2d");
-                    var width = canvas.width * _scale;
-                    var height = canvas.height * _scale;
+                    var width = canvas.width;
+                    var height = canvas.height;
 
-                    target.style.cursor = "url('data:img/jpg;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABOklEQVRYR+2W21HDMBBFTyognQQqgHQQOqAFOqEDoAJKSEpIOqAEOoC5M3hGsWXtw5rJj/1ry+fsrnTtDTe+Njfmswr07MAWeAcOwAl4Bn6sEfcSEPwI3BfAM7C3JHoJqOLHSrWmRC8BVS6Ju6jEEgG1/Qt4BVRpSiIrUM5cG02zTklkBGobzivxCbyUY4oK1ODD+7wSV8yIQAvulUh3wAO3JC7A0zgXPB2IwOck3v4TcpKMlkAGXko8AN+tOG4JLIEPzMnMxzJzAj3g1ZlHBBStO+trNnPfBddaawQZCTe8JaC0+gA0iohECN4S+AW0g5XvXokw3BIoo9WSSMEtAd33SKThHgFLYhG8JaDKy7+bWie0fpLt0WM7dwx1CpTfYwn96epUaE8M3Ykyr563vgWLXu5ZvAqsHfgD9TFiIelPhToAAAAASUVORK5CYII=') 5 40, auto";
+                    target.style.cursor = "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAABGdBTUEAALGPC/xhBQAAARpJREFUOBGdkr1KA0EUhTcxEkSQQIpAihQWPoedD2BnIVsZQiBVEkiR7SwtBDsJqXwBLQwEgoWNjY2FjYUQ38Ei5Oc7sBeGLTKze+Djzsyecxh2N4ryq0zkHpYQQ2H1SW5TNsxukaZzQsewACvTvIBg3eFUaABHMEv3OruBIN3icm8wZl+FZ3iBQ/AqweGW2FrlKlChV0McFsxOvaegm/T2lLzzTC/dqzaO7A1s/8GzE28Dhhj0f1jQnZ+c18CrKxxrcMO2/uK87m3AcAkrsKA7vzlvQJAmuNywrX84bwY1YBrBATyCFWj+QguCJKNCU1DZQ7r/Y55CsK5x2i2eWFcggTPIJd3Eiv5Zd3KlU3OJOQd9lVd4A5Xl1g4YG2GGhwRfegAAAABJRU5ErkJggg==) 0 17,default";
                     target.width = width;
                     target.height = height;
                     target.style.width = width;
@@ -3815,10 +3816,10 @@ var sharingan = function () {
                         y = e.offsetY;
                         if (type == "pen") {
                             obj.beginPath();
-                            obj.moveTo(x, y);
+                            obj.moveTo(x / _scale, y / _scale);
                         }
 
-                        var draw = new _draw2.default(obj, { type: style, color: color, width: linewidth });
+                        var draw = new _draw2.default(obj, { scale: _scale, type: style, color: color, width: linewidth });
 
                         target.onmousemove = function (e) {
                             w = e.offsetX;
